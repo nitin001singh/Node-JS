@@ -69,98 +69,73 @@
 // });
 // server.listen(8080);
 
-// const index = fs.readFileSync("index.html", "utf-8");
+require('dotenv').config()
+const fs = require("fs");
+const index = fs.readFileSync("index.html", "utf-8");
+const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
+const product = data.products[0];
 
-require('dotenv').config();
-const express = require("express");
-const mongoose = require('mongoose')
-const productRouter   = require('./routes/product')
-const userRouter   = require('./routes/user')
+const express = require('express');
 const server = express();
-const morgan = require("morgan");
-const cors = require('cors');
-const { compareLoose } = require('semver');
 
-const path = require('path')
-
-server.use(morgan("default"));
-
-// db connection
-main().catch(err => console.log(err));
-
-async function main() {
-  await mongoose.connect(process.env.MONGO_URI);
-  console.log('Database connected');
-}
-
-
-server.use(cors())
+const morgan = require('morgan');
+server.use(morgan('dev'))
 
 // bodyParser
 server.use(express.json());
 // server.use(express.urlencoded());
-server.use(express.static(path.resolve(__dirname, "public")));
-server.use('/products',productRouter.router);
-server.use('/users',userRouter.router);
-
-// If react build created 
-server.use('*',(req,res)=>{
-  res.sendFile(path.resolve(__dirname__, '/build/index.html'))
-})
+server.use(express.static('public'));
 
 
 // Application level middleware
-// server.use((req, res, next) => {
-//   console.log(req.get("User-Agent"), req.method, req.ip, req.hostname);
-//   next();
-// });
-
-// // // Roter level middleware
-// const auth = ((req,res,next)=>{
-//   // console.log(req.body.password);
-//   // console.log(req.query);
-//   // if(req.body.password == 123){
-//   //   next();
-//   // }else{
-//   //   res.sendStatus(401)
-//   // }
+// server.use((req,res,next)=>{
+//   console.log(req.get('User-Agent'), req.method, req.ip, req.hostname);
 //   next();
 // })
+
+
+
+
+// Roter level middleware
+const auth = ((req,res,next)=>{
+  console.log(req.body.password);
+  if(req.body.password == 123){
+    next();
+  }else{
+    res.sendStatus(401)
+  }
+})
+
 
 // API  - Endpoint ,  Routes
+server.get('/', auth, (req,res)=>{
+  // console.log(process.env.DB_PASSWORD);
+ res.json({type:'GET'})
+})
+server.post('/', auth, (req,res)=>{
+  res.json({type:'POST'})
+ })
 
-// Products
+ server.put('/', (req,res)=>{
+  res.json({type:'PUT'})
+ })
+
+ server.patch('/', (req,res)=>{
+  res.json({type:'PATCH'})
+ })
+
+ server.delete('/', (req,res)=>{
+  res.json({type:'DELETE'})
+ })
 
 
-// server.get('/product/:id', auth, (req,res)=>{
-//   console.log(req.params);
-//   res.json({type:'GET'})
-//  })
 
-// server.get('/', auth, (req,res)=>{
-//  res.json({type:'GET'})
-// })
-// server.post('/', auth, (req,res)=>{
-//   res.json({type:'POST'})
-//  })
+server.get('/demo', (req,res)=>{
+  // res.status(200).send('<h1>hello</h1>')
+  // res.json(data.products)
+})
 
-//  server.put('/', (req,res)=>{
-//   res.json({type:'PUT'})
-//  })
 
-//  server.patch('/', (req,res)=>{
-//   res.json({type:'PATCH'})
-//  })
-
-//  server.delete('/', (req,res)=>{
-//   res.json({type:'DELETE'})
-//  })
-
-// server.get('/demo', (req,res)=>{
-//   // res.status(200).send('<h1>hello</h1>')
-//   // res.json(data.products)
-// })
-
-server.listen(process.env.PORT, () => {
-  console.log("Server started");
-});
+server.listen(8080, ()=>{
+  console.log('Server started');
+})
