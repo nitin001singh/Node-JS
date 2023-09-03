@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        async function deleteProduct(product) {
+            await fetch('/products/'+product, { method: 'DELETE' }).then((data)=>{
+                console.log(data);
+            }).catch((err)=>{
+                console.log(err);
+            })
+        }
+    </script>
+</head>
+<body>
+    <table>
+        <% if(products) { %>
+        <% for(let product of products) { %>
+        <tr> <td><img src="<%= product.thumbnail %>" alt="" srcset="" /></td> </tr>
+        <tr> <td><%= product.title %></td> </tr>
+        <tr> <td><%= product.price %></td> </tr> 
+        <tr><td>
+            <a href="#" onclick="deleteProduct('<%= product._id %>')">Delete</a>
+        </td></tr>
+        <% } } %>
+    </table>
+</body>
+</html>

@@ -2,6 +2,18 @@ const fs = require("fs");
 const mongoose = require('mongoose')
 const model = require('../model/product')
 const Product = model.Product;
+const ejs = require('ejs')
+
+const path = require('path')
+
+
+exports.getAllProductsSSR = async (req,res)=>{
+  const products = await Product.find()
+ ejs.renderFile(path.resolve(__dirname,'../pages/index.ejs'), {products}, {}, function(err, str){
+  res.send(str)
+  });
+}
+
 
 exports.createProduct = async(req,res)=>{
     const product = new Product(req.body);
@@ -41,6 +53,7 @@ exports.createProduct = async(req,res)=>{
     res.status(201).json(product)
   }
   exports.getAllProducts = async (req,res)=>{
-    const products = await Product.find()
+    const products = await Product.find().sort({price:-1})
     res.json(products)
   }
+

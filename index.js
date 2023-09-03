@@ -104,9 +104,9 @@ server.use('/products',productRouter.router);
 server.use('/users',userRouter.router);
 
 // If react build created 
-server.use('*',(req,res)=>{
-  res.sendFile(path.resolve(__dirname__, '/build/index.html'))
-})
+// server.use('*',(req,res)=>{
+//   res.sendFile(path.resolve(__dirname, '/build/index.html'))
+// })
 
 
 // Application level middleware
